@@ -12,6 +12,8 @@ The goal is a feed curated to your lens that becomes your own podcast. Research 
 
 Works with any agent that can run commands, keep files between runs, and run on a timer.
 
+**What a lens is.** Your lens is a short, editable file (`lens.md`) that tells the agent what matters to you. It has a one-sentence purpose, a few angles you care about, and for each angle what counts as a hit, what's a near-miss and what to ignore, plus real examples of each. The agent scores every item it reads against it. Nothing reaches your episode unless it clears the lens, and your corrections keep sharpening it.
+
 ## R1. Purpose
 
 - Question: in one sentence, what do you want this feed to keep you ahead on? Who else listens?

@@ -2,13 +2,15 @@
 
 Turn the slice of the world you care about into your own daily podcast.
 
-You write down what you're trying to stay ahead on, and an agent sweeps the places that news actually shows up: news sites, company blogs, changelogs, papers, social posts, forums, and the podcasts you already follow. It scores everything against your written lens, throws out what doesn't matter, and builds one short episode for your commute or review window. Most items are narrated in a single voice. When the best take on something is a person saying it on a show, you hear the real clip.
+It starts with your **lens**: a short file you write that says what you're trying to stay ahead on and why, with a few real examples of things you'd want flagged and things you'd want skipped. Every item the agent reads gets judged against it, and only what clears it makes the episode. The examples are what make it a lens rather than a topic list.
+
+Once the lens exists, an agent sweeps the places that news actually shows up: news sites, company blogs, changelogs, papers, social posts, forums, and the podcasts you already follow. It scores everything against your written lens, throws out what doesn't matter, and builds one short episode for your commute or review window. Most items are narrated in a single voice. When the best take on something is a person saying it on a show, you hear the real clip.
 
 The point is the curation, not the audio. A generic news digest is easy to get. A feed that knows what you care about, learns from your corrections, and stays quiet on slow days is the part worth building.
 
 ## How it works
 
-1. **Lens.** One purpose sentence and 2–5 named topics, each with what counts as a hit, a near-miss, and noise, plus real examples both ways. You own this file and it gets sharper every time you correct a verdict.
+1. **Lens.** The file defined above: one purpose sentence and 2–5 named topics, each with what counts as a hit, a near-miss, and noise, plus real examples both ways. You own this file and it gets sharper every time you correct a verdict.
 2. **Sweep.** On a schedule, the agent checks every source in `sources.md`: written sources for new items since the last run, and podcast feeds for new episodes, which it transcribes and reads in full.
 3. **Score.** Every candidate gets a verdict per topic, with a one-line reason, and only hits become queue items. Claims keep their type: first-hand data, a vendor claim, or someone's opinion.
 4. **Build.** Audio turns the queue into one episode: narrated segments for written items, real clips with a short spoken intro for podcast moments, and nothing that already aired.
