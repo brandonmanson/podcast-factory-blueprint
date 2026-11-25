@@ -60,7 +60,7 @@ Works with any agent that can run commands, keep files between runs, and run on 
 
 ## R8. Hand hits to audio
 
-- Action: write one queue item per hit. A written hit becomes a `story`: source, headline, published date, the verified facts the narration may use, the link, and why it matters. A podcast hit becomes a `clip`: the show, the episode audio URL, the verbatim quote copied from the transcript, the approximate start and end (60–150 seconds), the episode link plus timestamp, and why it matters.
+- Action: submit one queue item per hit to the intake API ([ARCHITECTURE.md](ARCHITECTURE.md) C2), or write it to `queue/` while there's only one agent. If intake answers 403 or 429, stop posting for the run, keep the rest locally, and resubmit them first next run. Write one queue item per hit. A written hit becomes a `story`: source, headline, published date, the verified facts the narration may use, the link, and why it matters. A podcast hit becomes a `clip`: the show, the episode audio URL, the verbatim quote copied from the transcript, the approximate start and end (60–150 seconds), the episode link plus timestamp, and why it matters.
 - Pass-fail: a schema check against [templates/queue-item.schema.json](templates/queue-item.schema.json) passes on every queue item, every story fact can be found on its source page, every clip quote appears word for word in the saved transcript near the given start, and no two items share a source link (plus timestamp for clips).
 
 ## R9. Opinions are anecdotes
@@ -137,13 +137,58 @@ Works with any agent that can run on a schedule and use connectors; steps that n
 - Action: log characters or credits used per episode, and skip or shorten the build when the month's projected total would pass the cap.
 - Pass-fail: the cost log has a row for every episode, and the running total is under the cap.
 
-## A9. Private delivery
+## A9. Private podcast feed (default delivery)
 
-- Action: publish to a private feed at an unguessable link (or send it to the owner's chat), with the transcript next to each episode.
-- Pass-fail: the newest episode plays from the feed in a podcast app, and its transcript opens.
+The default is a private podcast feed the owner subscribes to once, so each episode shows up in their usual podcast app next to everything else they listen to. Sending the file to the owner's chat is the fallback, only for agents that cannot publish files to the web.
+
+- Action: build and host these. The provider and language are up to the agent.
+  - Hosting: any static host or object storage that serves files over HTTPS, answers range requests (the `Range` header, which podcast apps use to seek and resume), and sends `Content-Type: audio/mpeg` for MP3s.
+  - Address: put the feed and its files under a path containing a random token of at least 128 bits (for example 32 hex characters). Nothing links to it, the folder does not list its contents, and the feed carries `<itunes:block>Yes</itunes:block>` so directories skip it. The address works like a password, so keep it with the other secrets (A11) and never post it in chat or logs.
+  - Feed file: RSS 2.0 with the iTunes and Podcasting 2.0 namespaces, a square cover image (1400–3000 px), and one `<item>` per episode with a title, `pubDate`, a stable unique `guid`, an `<enclosure>` with the URL, exact length in bytes and `type="audio/mpeg"`, `itunes:duration`, a description that lists the source links, and a `<podcast:transcript>` tag pointing at the episode's transcript.
+  - Publishing: give each episode a file name that never changes (for example `2026-01-15-0600-slug.mp3`), upload the audio and transcript first, then write the new feed to a temporary name and replace the old one in a single step, so a podcast app never reads a half-written feed or an enclosure that isn't uploaded yet.
+  - Rotation: if the address leaks, make a new token, move the files, and have the owner subscribe again.
+- Pass-fail, every publish:
+  - The feed parses as XML, and every `guid` is unique.
+  - A `HEAD` request on each new enclosure returns 200, its `Content-Length` matches the enclosure length, and its `Content-Type` is `audio/mpeg`. A request for the first kilobyte with a `Range` header returns 206.
+  - The transcript URL returns 200.
+  - The feed's folder without the token returns 403 or 404, never a file list.
+- Pass-fail, once at setup: the owner subscribes in their own podcast app, and the newest episode plays from start to finish.
 - If the feed includes clips of other people's shows, keep it to your own listening unless you've decided your wider use is fair.
 
 ## A10. Pilot and calibration
 
 - Action: build one short pilot episode from the sources chosen at setup, then ask the owner what to change.
 - Pass-fail: the owner's feedback is saved as general principles in `style-guide.md` (copy [templates/style-guide.md](templates/style-guide.md); not narrow "don't say X" rules), and the next build reads that file.
+
+## A11. Keys and secrets
+
+- Question: which accounts does this need? Usually the voice service, write access to the feed host, and an intake key if other agents submit research.
+- Action: keep each key in the agent's own secret store, or in a file outside any repo that only the agent's user can read (for example mode 600). Give scripts the key through an environment variable. Never put a key or the feed address in scripts, logs, queue items, transcripts or chat. Scope each key as narrowly as the provider allows, for example write access to the feed's one bucket or folder.
+- Pass-fail: one read-only call per key succeeds (for example, list voices on the voice service, or list the feed folder), and a search of scripts, logs and published files for each key's value finds nothing.
+
+## A12. Storage layout
+
+- Action: keep all state in one folder that survives restarts, in a fixed layout. Something like this works:
+
+```
+factory/
+  settings.json         audience, minutes, cadence, voice, cost cap
+  lens.md  sources.md  style-guide.md
+  corpus/<source>/      saved items and transcripts, with the watermark per source
+  queue/<id>.json       one item per hit, valid against templates/queue-item.schema.json
+  aired.jsonl           one line per aired item (A7)
+  costs.csv             one row per episode (A8)
+  runs.log              one row per scheduled run, research or production
+  episodes/<date-slug>/ script.md, chunks/, clips/, episode.mp3, transcript.txt
+  secrets/              keys (A11); never committed or published
+```
+
+- Keep anything you would miss out of folders the platform treats as disposable, such as caches or build output.
+- Pass-fail: after a restart, the agent reads `settings.json`, the newest `runs.log` row and the newest `aired.jsonl` line, and rebuilding the feed from `episodes/` produces the same items as the published feed.
+
+## A13. Scheduled runs
+
+- Question: when does the owner usually start listening?
+- Action: schedule research first and production after it, with enough lead time that the episode is published before that time. Hold a lock file while a run works, so a second trigger exits instead of building twice. If research found no new hits, production logs a skipped run and publishes nothing, with no filler episode.
+- Pass-fail: on each scheduled day, `runs.log` shows a research row and then a production row (built or skipped), the newest episode's `pubDate` is before the listening time, and a test trigger started during a run exits because of the lock.
+

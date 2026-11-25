@@ -6,6 +6,8 @@ It starts with your **lens**: a short file you write that says what you're tryin
 
 Once the lens exists, an agent sweeps the places that news actually shows up: news sites, company blogs, changelogs, papers, social posts, forums, and the podcasts you already follow. It scores everything against your written lens, throws out what doesn't matter, and builds one short episode for your commute or review window. Most items are narrated in a single voice. When the best take on something is a person saying it on a show, you hear the real clip.
 
+**To use it:** give this repo's URL to an agent that can run commands and keep files, and tell it to build you one. It starts at [SETUP.md](SETUP.md), interviews you for the lens and sources, and builds the pieces in [ARCHITECTURE.md](ARCHITECTURE.md).
+
 The point is the curation, not the audio. A generic news digest is easy to get. A feed that knows what you care about, learns from your corrections, and stays quiet on slow days is the part worth building.
 
 ## How it works
@@ -13,8 +15,9 @@ The point is the curation, not the audio. A generic news digest is easy to get. 
 1. **Lens.** The file defined above: one purpose sentence and 2–5 named topics, each with what counts as a hit, a near-miss, and noise, plus real examples both ways. You own this file and it gets sharper every time you correct a verdict.
 2. **Sweep.** On a schedule, the agent checks every source in `sources.md`: written sources for new items since the last run, and podcast feeds for new episodes, which it transcribes and reads in full.
 3. **Score.** Every candidate gets a verdict per topic, with a one-line reason, and only hits become queue items. Claims keep their type: first-hand data, a vendor claim, or someone's opinion.
-4. **Build.** Audio turns the queue into one episode: narrated segments for written items, real clips with a short spoken intro for podcast moments, and nothing that already aired.
-5. **Calibrate.** You mark items hit, miss, or meh. Each correction becomes a test case and, if it's a pattern, a rule in the lens.
+4. **Build.** Research agents post hits to an intake API, which decides when there's enough for an episode. Audio turns that batch into one episode: narrated segments for written items, real clips with a short spoken intro for podcast moments, and nothing that already aired.
+5. **Deliver.** The episode lands in a private RSS feed, so it shows up in your normal podcast app.
+6. **Calibrate.** You mark items hit, miss, or meh. Each correction becomes a test case and, if it's a pattern, a rule in the lens.
 
 Research and production can be one agent or two. The steps name files and proofs, not a particular vendor's workflow.
 
@@ -27,6 +30,7 @@ Private listening is the assumption: short slices of other people's shows with y
 ## What's in this package
 
 - [SETUP.md](SETUP.md) — first-time walkthrough, in order.
+- [ARCHITECTURE.md](ARCHITECTURE.md) — the components to build (store, intake API, scheduler, secrets, voice, audio, hosting, private feed), each with a contract and a pass-fail check.
 - [GUIDE.md](GUIDE.md) — the Research and Production steps, each with a question (when the owner must answer), an action, and a pass-fail check.
 - [CHECKLIST.md](CHECKLIST.md) — the same proofs in a list you can rerun anytime to see what still works.
 - [templates/](templates/) — starter files to copy and fill in:

@@ -48,11 +48,11 @@ Keep the voice samples short; narration is the main ongoing cost.
 
 Proofs: CHECKLIST A2, A3, and A8, and GUIDE A2, A3, and A8.
 
-## 6. Decide how the episode arrives
+## 6. Set up keys, storage, the private feed and the schedule
 
-Publish to a private feed at an unguessable link, or send it to the owner's chat, with the transcript next to each episode. Confirm the newest episode plays and its transcript opens.
+Store the voice-service and feed-host keys safely and create the state folder. Then stand up the private podcast feed: hosted audio and transcripts under an address with a random token, plus an RSS feed the owner subscribes to once in their own podcast app. Chat delivery is only the fallback for agents that cannot publish files. If more than one agent or script will contribute research, stand up the intake API from [ARCHITECTURE.md](ARCHITECTURE.md) C2 and give each contributor its own key. Last, ask when the owner starts listening and schedule research and then production to finish before that time.
 
-Proofs: CHECKLIST A9, and GUIDE A9.
+Proofs: CHECKLIST A9, A11, A12 and A13, and GUIDE A9, A11, A12 and A13.
 
 ## 7. Build a short pilot, then write the style guide
 

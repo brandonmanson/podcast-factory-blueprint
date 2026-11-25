@@ -80,10 +80,31 @@ Complete these once during setup, then rerun them whenever you change the agent,
 - Action: start the cost log and record the cap in settings.
 - Pass-fail: the cost log exists, the cap is recorded, and the running total is under the cap.
 
-### A9. Delivery
+### A9. Private podcast feed
 
-- Action: publish to a private feed at an unguessable link (or send it to the owner's chat), with the transcript next to each episode.
-- Pass-fail: the newest episode plays from the feed in a podcast app, and its transcript opens.
+- Action: host the audio, transcripts and an RSS feed under an address with a random token of at least 128 bits, as GUIDE A9 specifies. Chat delivery is only the fallback for agents that cannot publish files.
+- Pass-fail: the feed parses, each enclosure answers `HEAD` with 200, the right length and `audio/mpeg`, a range request returns 206, the folder without the token returns 403 or 404, and the owner has subscribed in their own podcast app and played the newest episode to the end.
+
+### A11. Keys and secrets
+
+- Action: store each key (voice service, feed host, intake) in the agent's secret store or a file only the agent's user can read, pass it to scripts as an environment variable, and scope it narrowly.
+- Pass-fail: one read-only call per key succeeds, and a search of scripts, logs and published files for each key's value finds nothing.
+
+### A12. Storage layout
+
+- Action: create the state folder in the layout from GUIDE A12, somewhere that survives restarts.
+- Pass-fail: after a restart, the agent reads `settings.json` and the newest `runs.log` row, and a feed rebuilt from `episodes/` matches the published one.
+
+### A13. Scheduled runs
+
+- Question: when does the owner usually start listening?
+- Action: schedule research, then production, finishing before that time, with a lock so runs never overlap.
+- Pass-fail: `runs.log` shows research then production on a scheduled day, the episode's `pubDate` is before the listening time, and a second trigger during a run exits on the lock.
+
+### C2. Research intake API (once there are two contributors)
+
+- Action: run the proofs in [ARCHITECTURE.md](ARCHITECTURE.md) C2.
+- Pass-fail: a valid item returns 201 and the same body returns 409; a missing field returns 400 naming it; a revoked key returns 401; crossing the threshold cuts exactly one ready batch, the same on a fresh store; and a second agent onboards from `/docs` alone.
 
 ### A10. Pilot and calibration
 
@@ -159,5 +180,10 @@ Rerun these on a schedule, and anytime you want to know what still works.
 
 ### A9. The newest episode still plays
 
-- Action: open the feed or chat delivery and the companion transcript.
-- Pass-fail: the newest episode plays, and its transcript opens.
+- Action: publish the audio and transcript, then replace the feed in one step, and rerun the GUIDE A9 publish checks.
+- Pass-fail: the feed parses with unique `guid`s, the new enclosure answers 200 with the right length and `audio/mpeg`, a range request returns 206, and the transcript URL returns 200.
+
+### A13. The run happened on time
+
+- Action: append research and production rows to `runs.log`, including skipped runs.
+- Pass-fail: both rows exist for today, and the episode, if any, was published before the listening time.
