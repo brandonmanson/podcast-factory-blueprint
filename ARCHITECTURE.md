@@ -18,9 +18,9 @@ flowchart LR
   F --> L[Owner's podcast app]
 ```
 
-The intake API is the seam. Research and production never share a process, a file system or a model. Any agent that can make an HTTP request can contribute research, and the producer never has to know who found an item.
+The intake API is the seam. Once it exists, research and production never share a process, a file system or a model. Any agent that can make an HTTP request can contribute research, and the producer never has to know who found an item.
 
-A single agent with one folder can stand in for the intake API while there is only one researcher. Build the API as soon as a second agent, a second machine or a script needs to contribute.
+Until then, a single agent with one folder can stand in for the intake API while there is only one researcher; that is the only case where they share files. Build the API as soon as a second agent, a second machine or a script needs to contribute.
 
 ## Components
 
@@ -64,8 +64,8 @@ The responses are typed, so a contributor can act on them without reading prose:
 | Status | Meaning | What the contributor does |
 | --- | --- | --- |
 | `201` | Accepted and pending | Nothing |
-| `409` | Exact duplicate (same dedupe key or the same canonical source URL) | Nothing; don't retry |
-| `202` | Near duplicate, merged into an earlier item as an extra take | Nothing |
+| `409` | Exact duplicate (same dedupe key). The server already kept any new facts, analysis or URLs as a take | Don't retry |
+| `202` | Near duplicate. The server merged it into an earlier item as a take | Don't retry |
 | `400` | Invalid body; the message names each bad field | Fix and resubmit once |
 | `401` | Missing or revoked key | Stop and report |
 | `429` or `403` | Rate limit or edge protection | Stop the run, queue the rest locally, retry next run |
