@@ -116,9 +116,9 @@ Rerun these on a schedule, and anytime you want to know what still works.
 - Action: write one queue item per hit: a `story` for a written hit (headline, date, verified facts, link, why it matters) or a `clip` for a podcast hit (audio URL, verbatim quote, approximate start and end of 60–150 seconds, episode link plus timestamp, why it matters).
 - Pass-fail: a schema check against [templates/queue-item.schema.json](templates/queue-item.schema.json) passes on every queue item, every story fact can be found on its source page, every clip quote appears word for word in the saved transcript near the given start, and no two items share a source link.
 
-### R9. Hosts are anecdotes
+### R9. Opinions are anecdotes
 
-- Action: label each claim as first-hand data, a vendor claim, or a host's opinion or anecdote, and never upgrade one to another.
+- Action: label each claim as first-hand data, a vendor claim, or opinion and anecdote (from a host, writer or poster), and never upgrade one to another.
 - Pass-fail: every queue item has a claim-type field.
 
 ### R10. Corrections become lens rules

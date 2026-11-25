@@ -58,14 +58,14 @@ Works with any agent that can run commands, keep files between runs, and run on 
 - Action: on each scheduled run, read each new episode once per lens angle. Write a coverage record for it with a verdict per angle (hit, strong-minor, minor or nothing), timestamps and a one-line reason, even when nothing hits.
 - Pass-fail: every ingested episode has a coverage record, and every angle in it has a verdict. A missing record means the episode wasn't read.
 
-## R8. Hand clips to audio
+## R8. Hand hits to audio
 
 - Action: write one queue item per hit. A written hit becomes a `story`: source, headline, published date, the verified facts the narration may use, the link, and why it matters. A podcast hit becomes a `clip`: the show, the episode audio URL, the verbatim quote copied from the transcript, the approximate start and end (60–150 seconds), the episode link plus timestamp, and why it matters.
 - Pass-fail: a schema check against [templates/queue-item.schema.json](templates/queue-item.schema.json) passes on every queue item, every story fact can be found on its source page, every clip quote appears word for word in the saved transcript near the given start, and no two items share a source link (plus timestamp for clips).
 
-## R9. Hosts are anecdotes
+## R9. Opinions are anecdotes
 
-- Action: label each claim as first-hand data, a vendor claim, or a host's opinion or anecdote, and never upgrade one to another in the summary or the script.
+- Action: label each claim as first-hand data, a vendor claim, or opinion and anecdote (from a host, writer or poster), and never upgrade one to another in the summary or the script.
 - Pass-fail: every queue item has a claim-type field.
 
 ## R10. Corrections become lens rules
