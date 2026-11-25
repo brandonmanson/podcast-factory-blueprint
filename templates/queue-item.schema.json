@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Queue item",
+  "description": "A research hit handed to audio production.",
+  "type": "object",
+  "required": [
+    "source",
+    "verbatim_quote",
+    "start_time",
+    "end_time",
+    "source_link",
+    "why_it_matters"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Show or publication name."
+    },
+    "verbatim_quote": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The quote copied word for word from the saved transcript."
+    },
+    "start_time": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Approximate start of the clip (for example HH:MM:SS)."
+    },
+    "end_time": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Approximate end of the clip (for example HH:MM:SS). The span should be 60–150 seconds."
+    },
+    "source_link": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Episode link plus timestamp."
+    },
+    "why_it_matters": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Why this moment matters for the lens."
+    },
+    "episode_audio_url": {
+      "type": "string",
+      "description": "Optional. Episode audio URL from the RSS enclosure."
+    },
+    "claim_type": {
+      "type": "string",
+      "description": "Optional. Do not upgrade one type to another in the summary or the script.",
+      "enum": [
+        "first-hand data",
+        "vendor claim",
+        "host opinion or anecdote"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
