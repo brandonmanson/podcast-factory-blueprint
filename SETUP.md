@@ -4,7 +4,7 @@ Walk this once when you start. Each step below points at a proof in [CHECKLIST.m
 
 Copy the starter files from [templates/](templates/) and fill them in: [lens.md](templates/lens.md), [sources.md](templates/sources.md), [style-guide.md](templates/style-guide.md), and the queue-item schema at [templates/queue-item.schema.json](templates/queue-item.schema.json).
 
-Clips are on by default whenever CHECKLIST step 0 shows that the agent can run commands, keep files, and run `ffmpeg`. When that check fails, use narration that summarizes the point and links to the episode at the timestamp. Private listening is the assumption: short slices of other people's shows with your commentary around them. Publishing a feed of them is your own call.
+Clips are on by default whenever CHECKLIST step 0 shows that the agent can run commands, keep files, and run `ffmpeg`. When that check fails, podcast moments are narrated too, with a link to the episode at the timestamp. Written sources are always narrated. Private listening is the assumption: short slices of other people's shows with your commentary around them. Publishing a feed of them is your own call.
 
 ## 0. See what this agent can actually do
 
@@ -16,7 +16,7 @@ Run [CHECKLIST.md](CHECKLIST.md) step 0 on the agent you plan to use. Record whi
 
 ## 1. Write the purpose and the lens
 
-Ask what this podcast should keep you ahead on, and who else it is for. Copy [templates/lens.md](templates/lens.md) to `lens.md`. Save the purpose as the first line, then turn it into 2–5 named topics. For each topic, write what counts as a hit, what counts as a near-miss, and what to ignore. Keep `lens.md` editable; it is the owner's file, not the agent's.
+Ask what this feed should keep you ahead on, and who else listens. Copy [templates/lens.md](templates/lens.md) to `lens.md`. Save the purpose as the first line, then turn it into 2–5 named topics. For each topic, write what counts as a hit, what counts as a near-miss, and what to ignore. Keep `lens.md` editable; it is the owner's file, not the agent's.
 
 Proofs: CHECKLIST R1 and R2, and GUIDE R1–R2.
 
@@ -28,15 +28,15 @@ Proofs: CHECKLIST R3, and GUIDE R3.
 
 ## 3. Add sources and ingest a corpus
 
-List the shows you already listen to; the agent can suggest a few more that fit the lens. Copy [templates/sources.md](templates/sources.md) to `sources.md` and give each show a feed URL, a transcript source, and a cadence, trying transcript sources in this order: the publisher's own transcript (for example the RSS `<podcast:transcript>` tag or the show's site), then speech-to-text on the RSS audio (Whisper), then YouTube captions as a last resort.
+Ask where news on these topics shows up today: sites, company blogs, changelogs, newsletters, people or searches on social, forums, and shows. The agent suggests a few more of each kind that fit the lens. Copy [templates/sources.md](templates/sources.md) to `sources.md`. Give each written source a kind, how to check it (feed, page, or search query), and a cadence. Give each show a feed URL, a transcript source, and a cadence, trying transcript sources in this order: the publisher's own transcript (for example the RSS `<podcast:transcript>` tag or the show's site), then speech-to-text on the RSS audio (Whisper), then YouTube captions as a last resort.
 
-Drop any source whose feed does not resolve, whose newest episode is older than 30 days, or that does not yield a saved transcript. Then ingest with a watermark so reruns do not write duplicate files.
+Drop any source with no dated item in the last 30 days, and any show that does not yield a saved transcript. Keep at least one written source alongside the shows. Then ingest with a watermark per source so reruns do not write duplicates.
 
 Proofs: CHECKLIST R4 and R5, and GUIDE R4–R5.
 
-## 4. Calibrate on recent episodes
+## 4. Calibrate on recent items
 
-Score the last 5–10 episodes across the sources against the lens. Show the owner 8–10 moments, mixing ones flagged and ones passed on, and get a hit, miss, or "meh" on each. Save every disagreement to `examples/` and confirm that rescoring matches the expected verdicts.
+Score the last week of written items and the last 5–10 episodes against the lens. Show the owner 8–10 moments, mixing ones flagged and ones passed on, and get a hit, miss, or "meh" on each. Save every disagreement to `examples/` and confirm that rescoring matches the expected verdicts.
 
 Proofs: CHECKLIST R6, and GUIDE R6.
 
@@ -62,4 +62,4 @@ Proofs: CHECKLIST A10 and R8, and GUIDE A10 and R8.
 
 ## After setup
 
-Rerun [CHECKLIST.md](CHECKLIST.md) anytime — not only on the first day — to see what still works. Ongoing runs follow GUIDE R7–R11 and A4–A8.
+Rerun [CHECKLIST.md](CHECKLIST.md) anytime — not only on the first day — to see what still works. Ongoing runs follow GUIDE R7a–R11 and A4–A8.

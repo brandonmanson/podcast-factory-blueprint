@@ -1,12 +1,24 @@
 # Podcast factory blueprint
 
-A reusable way to have an agent keep you ahead on a beat: it reads the shows you already care about, scores new episodes against a written lens, and builds a short listening episode for your commute or review window.
+Turn the slice of the world you care about into your own daily podcast.
 
-This package is for anyone setting that up on an agent they already use. Research and production can be one agent or two. The steps name the files and proofs, not a particular vendor's workflow.
+You write down what you're trying to stay ahead on, and an agent sweeps the places that news actually shows up: news sites, company blogs, changelogs, papers, social posts, forums, and the podcasts you already follow. It scores everything against your written lens, throws out what doesn't matter, and builds one short episode for your commute or review window. Most items are narrated in a single voice. When the best take on something is a person saying it on a show, you hear the real clip.
+
+The point is the curation, not the audio. A generic news digest is easy to get. A feed that knows what you care about, learns from your corrections, and stays quiet on slow days is the part worth building.
+
+## How it works
+
+1. **Lens.** One purpose sentence and 2–5 named topics, each with what counts as a hit, a near-miss, and noise, plus real examples both ways. You own this file and it gets sharper every time you correct a verdict.
+2. **Sweep.** On a schedule, the agent checks every source in `sources.md`: written sources for new items since the last run, and podcast feeds for new episodes, which it transcribes and reads in full.
+3. **Score.** Every candidate gets a verdict per topic, with a one-line reason, and only hits become queue items. Claims keep their type: first-hand data, a vendor claim, or someone's opinion.
+4. **Build.** Audio turns the queue into one episode: narrated segments for written items, real clips with a short spoken intro for podcast moments, and nothing that already aired.
+5. **Calibrate.** You mark items hit, miss, or meh. Each correction becomes a test case and, if it's a pattern, a rule in the lens.
+
+Research and production can be one agent or two. The steps name files and proofs, not a particular vendor's workflow.
 
 ## Clips and narration
 
-Clips are on by default whenever the capability check in [CHECKLIST.md](CHECKLIST.md) step 0 passes (the agent can run commands, keep files, and run `ffmpeg`). When it does not, the fallback is narration that summarizes the point and links to the episode at the timestamp.
+Clips are on by default whenever the capability check in [CHECKLIST.md](CHECKLIST.md) step 0 passes (the agent can run commands, keep files, and run `ffmpeg`). When it doesn't, podcast moments get narrated too, with a link to the episode at the timestamp.
 
 Private listening is the assumption: short slices of other people's shows with your commentary around them. Publishing a feed of them is your own call.
 
@@ -17,11 +29,11 @@ Private listening is the assumption: short slices of other people's shows with y
 - [CHECKLIST.md](CHECKLIST.md) — the same proofs in a list you can rerun anytime to see what still works.
 - [templates/](templates/) — starter files to copy and fill in:
   - [templates/lens.md](templates/lens.md) — purpose, topics, and flag/skip test cases
-  - [templates/sources.md](templates/sources.md) — one block per show: feed URL, transcript source, cadence
+  - [templates/sources.md](templates/sources.md) — written sources (sites, blogs, changelogs, papers, searches) and shows, each with how to check it
   - [templates/style-guide.md](templates/style-guide.md) — general principles the next build must read
-  - [templates/queue-item.schema.json](templates/queue-item.schema.json) — required fields for each hit handed to audio
+  - [templates/queue-item.schema.json](templates/queue-item.schema.json) — required fields for each hit handed to audio, as a narrated story or a clip
 
-A step is done only when its proof passes. Do not check off a label like "sources set up." Check the proof: each show has a feed URL that resolves, a dated episode from the last 30 days, and a transcript file on disk.
+A step is done only when its proof passes. Do not check off a label like "sources set up." Check the proof: each source returns a dated item from the last 30 days, and each show has a transcript file on disk.
 
 ## Platform cards
 

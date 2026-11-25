@@ -4,7 +4,7 @@ Works with any agent that can run on a schedule and use connectors; steps that n
 
 Each step has a question for the owner (if any), an action, and a pass-fail check. A step is done only when its proof passes. Rerun the proofs anytime to see what still works.
 
-Clips are on by default whenever Production step A1 (and CHECKLIST step 0) passes. If the agent cannot run commands, fall back to narration that summarizes the point and links to the episode at the timestamp. Private listening is the assumption: short slices of other people's shows with your commentary around them. Publishing a feed of them is your own call.
+The goal is a feed curated to your lens that becomes your own podcast. Research sweeps written sources (news, blogs, changelogs, papers, social searches, forums) and podcast episodes against one lens; production narrates the written hits and plays real clips for podcast moments. Clips are on by default whenever Production step A1 (and CHECKLIST step 0) passes. If the agent cannot run commands, podcast moments are narrated too, with a link to the episode at the timestamp. Private listening is the assumption: short slices of other people's shows with your commentary around them. Publishing a feed of them is your own call.
 
 ---
 
@@ -14,7 +14,7 @@ Works with any agent that can run commands, keep files between runs, and run on 
 
 ## R1. Purpose
 
-- Question: in one sentence, what do you want this podcast to keep you ahead on? Who else is it for?
+- Question: in one sentence, what do you want this feed to keep you ahead on? Who else listens?
 - Action: save the sentence as the first line of `lens.md` (copy [templates/lens.md](templates/lens.md)).
 - Pass-fail: `lens.md` exists and starts with a single purpose sentence.
 
@@ -32,29 +32,34 @@ Works with any agent that can run commands, keep files between runs, and run on 
 
 ## R4. Sources
 
-- Question: which shows do you already listen to? The agent then suggests a few more that fit the lens.
-- Action: list each source in `sources.md` (copy [templates/sources.md](templates/sources.md)) with its feed URL, transcript source, and cadence, in this order: the publisher's own transcript (for example the RSS `<podcast:transcript>` tag or the show's site), then speech-to-text on the RSS audio (Whisper), then YouTube captions as a last resort.
-- Pass-fail: for every source, the feed resolves, the newest episode is under 30 days old, and one transcript was actually fetched and saved. Drop any source that fails.
+- Question: where does news on these topics show up for you today: sites, blogs, changelogs, newsletters, people or searches on social, forums, and shows you listen to? The agent then suggests a few more of each kind that fit the lens.
+- Action: list each source in `sources.md` (copy [templates/sources.md](templates/sources.md)). Written sources get a kind, how to check them (feed, page or search query), and a cadence. Shows get a feed URL, a transcript source and a cadence, with transcripts tried in this order: the publisher's own transcript (for example the RSS `<podcast:transcript>` tag or the show's site), then speech-to-text on the RSS audio (Whisper), then YouTube captions as a last resort.
+- Pass-fail: every source returns a dated item under 30 days old, and every show has one transcript actually fetched and saved. Drop any source that fails, and keep at least one written source alongside the shows.
 
 ## R5. Corpus with a watermark
 
-- Action: save every transcript as a timestamped file (segments with start times), named by show and date, and record which episodes are already ingested.
-- Pass-fail: rerunning ingest on an unchanged feed adds zero files, and a new episode adds exactly one.
+- Action: save every transcript as a timestamped file (segments with start times), named by show and date, and record which episodes are already ingested. Keep a watermark per written source too (newest item seen), and a coverage log of every item scored.
+- Pass-fail: rerunning ingest on unchanged sources adds zero files or log rows, and a new episode or article adds exactly one.
 
 ## R6. Calibration round
 
-- Action: score the last 5–10 episodes across the sources against the lens. Show the owner 8–10 moments, mixing ones flagged and ones passed on, and ask for hit, miss or "meh" on each.
+- Action: score the last week of written items and the last 5–10 episodes against the lens. Show the owner 8–10 moments, mixing ones flagged and ones passed on, and ask for hit, miss or "meh" on each.
 - Pass-fail: every disagreement is saved to `examples/` as a new case, and rescoring all examples gives their expected verdicts.
 
-## R7. Read every new episode in full
+## R7a. Sweep written sources
+
+- Action: on each scheduled run, check every written source for items newer than its watermark. Open each candidate and read the item itself, not the headline or a summary of it. Score it once per lens angle (hit, strong-minor, minor or nothing) with a one-line reason, and skip anything an earlier run already covered.
+- Pass-fail: every written source has a check logged for the run with a new watermark, every opened item has a verdict per angle, and no hit repeats a source link already in the coverage log.
+
+## R7b. Read every new episode in full
 
 - Action: on each scheduled run, read each new episode once per lens angle. Write a coverage record for it with a verdict per angle (hit, strong-minor, minor or nothing), timestamps and a one-line reason, even when nothing hits.
 - Pass-fail: every ingested episode has a coverage record, and every angle in it has a verdict. A missing record means the episode wasn't read.
 
 ## R8. Hand clips to audio
 
-- Action: for each hit worth hearing, write a queue item with the show, the episode audio URL, the verbatim quote copied from the transcript, the approximate start and end (60–150 seconds), the episode link plus timestamp, and why it matters for the lens.
-- Pass-fail: a schema check against [templates/queue-item.schema.json](templates/queue-item.schema.json) passes on every queue item, the quote appears word for word in the saved transcript near the given start, and no two items share a source link plus timestamp.
+- Action: write one queue item per hit. A written hit becomes a `story`: source, headline, published date, the verified facts the narration may use, the link, and why it matters. A podcast hit becomes a `clip`: the show, the episode audio URL, the verbatim quote copied from the transcript, the approximate start and end (60–150 seconds), the episode link plus timestamp, and why it matters.
+- Pass-fail: a schema check against [templates/queue-item.schema.json](templates/queue-item.schema.json) passes on every queue item, every story fact can be found on its source page, every clip quote appears word for word in the saved transcript near the given start, and no two items share a source link (plus timestamp for clips).
 
 ## R9. Hosts are anecdotes
 
@@ -113,13 +118,15 @@ Works with any agent that can run on a schedule and use connectors; steps that n
 ## A6. Script rules
 
 - Every claim names its source, and anything without one is cut.
+- Written items are narrated from their verified facts only, naming the source in the sentence.
 - Each clip gets a short spoken intro saying why it matters to the listener's lens.
+- Lead with the strongest hit, whatever its kind, and mix stories and clips rather than grouping all clips at the end.
 - Plain words: explain any technical term in one sentence the first time it comes up.
 - Pass-fail: a check confirms every script item maps to a queue item with a source link.
 
 ## A7. No repeats
 
-- Action: append every aired item (source link plus quote) to an aired log, and check it before each build.
+- Action: append every aired item (source link, plus quote for clips) to an aired log, and check it before each build.
 - Pass-fail: the new episode has zero items that match the aired log.
 
 ## A8. Cost cap

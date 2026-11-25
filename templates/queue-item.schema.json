@@ -1,60 +1,109 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Queue item",
-  "description": "A research hit handed to audio production.",
+  "description": "A research hit handed to audio production: a narrated story from a written source, or a clip from a podcast episode.",
   "type": "object",
   "required": [
+    "kind",
     "source",
-    "verbatim_quote",
-    "start_time",
-    "end_time",
     "source_link",
     "why_it_matters"
   ],
   "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "story",
+        "clip"
+      ],
+      "description": "story: narrated from a written source. clip: cut from a podcast episode."
+    },
     "source": {
       "type": "string",
       "minLength": 1,
-      "description": "Show or publication name."
-    },
-    "verbatim_quote": {
-      "type": "string",
-      "minLength": 1,
-      "description": "The quote copied word for word from the saved transcript."
-    },
-    "start_time": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Approximate start of the clip (for example HH:MM:SS)."
-    },
-    "end_time": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Approximate end of the clip (for example HH:MM:SS). The span should be 60–150 seconds."
+      "description": "Publication, site, or show name."
     },
     "source_link": {
       "type": "string",
       "minLength": 1,
-      "description": "Episode link plus timestamp."
+      "description": "Article URL, or episode link plus timestamp."
     },
     "why_it_matters": {
       "type": "string",
       "minLength": 1,
-      "description": "Why this moment matters for the lens."
+      "description": "Why this item matters for the lens."
+    },
+    "published_date": {
+      "type": "string",
+      "description": "Date the item was published (YYYY-MM-DD)."
+    },
+    "headline": {
+      "type": "string",
+      "description": "Story only. One-line headline in plain words."
+    },
+    "verified_facts": {
+      "type": "string",
+      "description": "Story only. The facts the narration may use, each one checked against the source. Narration adds nothing beyond these."
+    },
+    "verbatim_quote": {
+      "type": "string",
+      "description": "Clip only. The quote copied word for word from the saved transcript."
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Clip only. Approximate start (for example HH:MM:SS)."
+    },
+    "end_time": {
+      "type": "string",
+      "description": "Clip only. Approximate end (for example HH:MM:SS). The span should be 60–150 seconds."
     },
     "episode_audio_url": {
       "type": "string",
-      "description": "Optional. Episode audio URL from the RSS enclosure."
+      "description": "Clip only. Episode audio URL from the RSS enclosure."
     },
     "claim_type": {
       "type": "string",
-      "description": "Optional. Do not upgrade one type to another in the summary or the script.",
       "enum": [
         "first-hand data",
         "vendor claim",
         "host opinion or anecdote"
-      ]
+      ],
+      "description": "Do not upgrade one type to another in the summary or the script."
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "story"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "headline",
+          "verified_facts",
+          "published_date"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "clip"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "verbatim_quote",
+          "start_time",
+          "end_time"
+        ]
+      }
+    }
+  ],
   "additionalProperties": false
 }
