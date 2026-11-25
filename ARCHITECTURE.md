@@ -88,7 +88,7 @@ The service, not any contributor, decides when there's enough for an episode.
 
 - Estimate airtime deterministically. For example, narration seconds = words in `verified_facts` plus `why_it_matters` / 140 × 60, and a clip adds `end_time` minus `start_time`. An item whose `why_it_matters` is under a minimum word count in `settings` is marked thin and counts zero.
 - When pending substantive airtime reaches the threshold in `settings` (for example 600 seconds), move those items into one `ready` batch.
-- Batches have explicit states: `ready`, `claimed`, `built`, `failed`, `abandoned`. A producer claims a batch, then marks it built (with the episode URL) or failed (with a reason). Items in an abandoned batch can be released back to pending.
+- Batches have explicit states: `ready`, `claimed`, `built`, `failed`, `abandoned`. A producer claims a batch, then marks it built (with the episode's `guid`, never its URL, which contains the feed token) or failed (with a reason). Items in an abandoned batch can be released back to pending.
 - Tell the producer by webhook, polling (`GET /batches?status=ready`), or both. A webhook carries a signed or keyed header, and the key is never logged.
 
 **Docs**
@@ -106,7 +106,7 @@ The service, not any contributor, decides when there's enough for an episode.
 
 ### C3. Intake MCP server (optional)
 
-- Contract: the same operations as C2 (submit item, list ready batches, claim, mark built or failed), exposed as MCP tools over HTTP. Each contributor's key goes in the server URL path or a header.
+- Contract: the same operations as C2 (submit item, list ready batches, claim, mark built or failed), exposed as MCP tools over HTTP. Each contributor's key goes in a header, not the URL, since URLs end up in logs.
 - Pass-fail: an MCP client lists the tools, submits one item and gets the same typed result as the HTTP call.
 
 ### C4. Scheduler
