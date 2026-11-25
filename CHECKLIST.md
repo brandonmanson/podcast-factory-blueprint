@@ -170,7 +170,7 @@ Rerun these on a schedule, and anytime you want to know what still works.
 
 ### A7. No repeats
 
-- Action: append every aired item (source link, plus quote for clips) to an aired log, and check it before each build.
+- Action: append every aired item to `aired.jsonl` by its dedupe key (the same key intake uses: for a clip, the audio URL plus the start second), and check it before each build.
 - Pass-fail: the new episode has zero items that match the aired log.
 
 ### A8. Cost cap still holds
