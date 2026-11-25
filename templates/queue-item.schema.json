@@ -26,7 +26,7 @@
     "source_link": {
       "type": "string",
       "minLength": 1,
-      "description": "Article URL, or episode link plus timestamp."
+      "description": "Article URL, or for a clip the episode link including its timestamp."
     },
     "why_it_matters": {
       "type": "string",
@@ -69,6 +69,22 @@
         "opinion or anecdote"
       ],
       "description": "Do not upgrade one type to another in the summary or the script."
+    },
+    "dedupe_key": {
+      "type": "string",
+      "description": "Optional. Set by the contributor; the intake API derives one if absent (see ARCHITECTURE C2)."
+    },
+    "found_at": {
+      "type": "string",
+      "description": "Optional. When research found the item (ISO 8601)."
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5,
+      "description": "Optional. Lens topics this item hits, by name from lens.md."
     }
   },
   "allOf": [
@@ -100,7 +116,8 @@
         "required": [
           "verbatim_quote",
           "start_time",
-          "end_time"
+          "end_time",
+          "episode_audio_url"
         ]
       }
     }

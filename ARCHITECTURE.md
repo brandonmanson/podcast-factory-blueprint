@@ -57,10 +57,7 @@ The point of this component is that any agent can contribute research independen
 
 **`POST /items`**
 
-The request body is one item. It has two kinds that match [templates/queue-item.schema.json](templates/queue-item.schema.json):
-
-- `story`: headline, source URLs, verified facts, why it matters, found-at time, optional topics from the lens, optional dedupe key.
-- `clip`: the same fields plus show, episode, audio URL, verbatim quote, start, end, and clip seconds.
+The request body is one queue item, valid against [templates/queue-item.schema.json](templates/queue-item.schema.json). That schema is the only definition of the fields; this file never adds or renames one. An item that fails the schema returns `400` naming each bad field.
 
 The responses are typed, so a contributor can act on them without reading prose:
 
@@ -75,7 +72,13 @@ The responses are typed, so a contributor can act on them without reading prose:
 
 Rules the service enforces:
 
-- Canonicalize URLs before checking duplicates (strip tracking parameters and trailing slashes, lowercase the host).
+- Dedupe key, when the contributor didn't send one:
+  - Story: the canonical `source_link`. Canonicalizing lowercases the host, drops a trailing slash, and removes only a fixed list of tracking parameters (`utm_*`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `ref`). Every other parameter stays.
+  - Clip: `episode_audio_url` plus the start time in whole seconds. Never strip a timestamp, so two clips from one episode never collide.
+- Exact duplicate (`409`): the same dedupe key.
+- Near duplicate (`202`), decided by a stated test with no model:
+  - Story: published within 7 days of an earlier story, shares its source domain, and the lowercase headline tokens (stopwords dropped) have a Jaccard similarity of at least 0.8.
+  - Clip: the same `episode_audio_url` as an earlier clip, with windows overlapping by more than half of the shorter one.
 - A duplicate is never silently dropped. Its new facts, analysis and URLs attach to the original item as a take, and the take adds no airtime.
 - No model call on the submit path. Same inputs, same decision.
 
@@ -83,7 +86,7 @@ Rules the service enforces:
 
 The service, not any contributor, decides when there's enough for an episode.
 
-- Estimate airtime deterministically. For example, narration seconds = words in facts plus analysis / 140 × 60, plus clip seconds. An item with too little analysis is marked thin and counts zero.
+- Estimate airtime deterministically. For example, narration seconds = words in `verified_facts` plus `why_it_matters` / 140 × 60, and a clip adds `end_time` minus `start_time`. An item whose `why_it_matters` is under a minimum word count in `settings` is marked thin and counts zero.
 - When pending substantive airtime reaches the threshold in `settings` (for example 600 seconds), move those items into one `ready` batch.
 - Batches have explicit states: `ready`, `claimed`, `built`, `failed`, `abandoned`. A producer claims a batch, then marks it built (with the episode URL) or failed (with a reason). Items in an abandoned batch can be released back to pending.
 - Tell the producer by webhook, polling (`GET /batches?status=ready`), or both. A webhook carries a signed or keyed header, and the key is never logged.
