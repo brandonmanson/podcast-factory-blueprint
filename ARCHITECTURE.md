@@ -136,7 +136,7 @@ The service, not any contributor, decides when there's enough for an episode.
 
 The episode should simply show up in the owner's podcast app with everything else they listen to. Chat delivery is the fallback, not the default.
 
-- Contract and proof: GUIDE A9 (the feed fields, atomic publish, rotation, and the parse, `HEAD`, range and subscribe checks). After publishing, mark the intake batch `built` with the episode URL.
+- Contract and proof: GUIDE A9 (the feed fields, atomic publish, rotation, and the parse, `HEAD`, range and subscribe checks). After publishing, mark the intake batch `built` with the episode's `guid` (never its URL, which contains the secret token).
 
 ---
 
